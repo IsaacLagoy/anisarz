@@ -2,7 +2,19 @@
 
 import { WebGLCanvas } from '@isaaclagoy/webgl-canvas';
 import { createCubeScene } from '@/lib/scenes/scene';
+import { vec3, quat } from 'gl-matrix';
 
-export default function Scene() {
-  return <WebGLCanvas sceneFactory={createCubeScene} />;
+interface SceneProps {
+  modelPath: string;
+  scale?: [number, number, number] | vec3;
+  initialRotation?: quat; // Quaternion for initial rotation
+}
+
+export default function Scene({ modelPath, scale, initialRotation }: SceneProps) {
+  const sceneFactory = (gl: WebGL2RenderingContext) => {
+    const scaleVec = scale ? (Array.isArray(scale) ? vec3.fromValues(scale[0], scale[1], scale[2]) : scale) : undefined;
+    const rotQuat = initialRotation || undefined;
+    return createCubeScene(gl, modelPath, scaleVec, rotQuat);
+  };
+  return <WebGLCanvas sceneFactory={sceneFactory} />;
 }

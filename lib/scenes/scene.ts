@@ -8,13 +8,18 @@ import {
     Skybox,
     type RenderFunction 
   } from '@isaaclagoy/webgl-canvas';
-  import { vec3, quat } from 'gl-matrix';
+  import { vec3, quat, mat4 } from 'gl-matrix';
   
 /**
- * Factory function to create a cube scene with a spinning cube
- * Takes WebGL context and returns a render function that handles all rendering
+ * Factory function to create a scene with a spinning model
+ * Takes WebGL context, model path, scale, and initial rotation, returns a render function that handles all rendering
  */
-export async function createCubeScene(gl: WebGL2RenderingContext): Promise<RenderFunction> {
+export async function createCubeScene(
+  gl: WebGL2RenderingContext, 
+  modelPath: string,
+  scale: vec3 = vec3.fromValues(1, 1, 1),
+  initialRotation: quat = quat.create()
+): Promise<RenderFunction> {
   // Create engine
   const engine = await Engine.create(gl);
 
@@ -22,7 +27,7 @@ export async function createCubeScene(gl: WebGL2RenderingContext): Promise<Rende
   const quadProgram = await Shader.create(
     gl,
     "/shaders/quad.vert",
-    "/shaders/quantizeBucket.frag"
+    "/shaders/edge.frag"
   );
 
   // Assign quad program to engine framebuffer for final output
@@ -50,30 +55,32 @@ export async function createCubeScene(gl: WebGL2RenderingContext): Promise<Rende
   scene.camera.target = vec3.fromValues(0, 0, 0);
   scene.camera.updateMatrices();
 
-  // Load cube mesh
-  const cubeMesh = await Mesh.fromObj(engine, "/models/cube.obj");
+  // Load model mesh
+  const modelMesh = await Mesh.fromObj(engine, modelPath);
 
-  // Create skybox
-  const skybox = new Skybox(engine, scene, cubeMesh, skyboxShader);
+  // Create skybox (using cube mesh for skybox)
+  const skyboxCubeMesh = await Mesh.fromObj(engine, "/models/cube.obj");
+  const skybox = new Skybox(engine, scene, skyboxCubeMesh, skyboxShader);
   scene.skybox = skybox;
   scene.setCycleTime(0.5); // Noon
 
-  // Create material
+  // Create plain material without textures
   const material = new Material(engine);
-  material.setDiffuse("/materials/rocks/rocks_Color.jpg"); // Reuse existing texture
+  // No texture set - plain material
   material.roughnessMultiplier = 0.3;
   material.metallic = 0.8;
 
-  // Create cube node
-  const cubeNode = new Node(
+  // Create model node with scale and initial rotation (quaternion)
+  const modelNode = new Node(
     scene,
     vec3.fromValues(0, 0, 0),
-    vec3.fromValues(1, 1, 1),
-    quat.create(),
-    cubeMesh,
+    scale,
+    initialRotation,
+    modelMesh,
     material
   );
-  scene.add(cubeNode);
+  scene.add(modelNode);
+  modelNode.angularVelocity = vec3.fromValues(0, 1, 0);
 
   let rotationAngle = 0;
 
@@ -89,12 +96,6 @@ export async function createCubeScene(gl: WebGL2RenderingContext): Promise<Rende
 
     // Update camera
     scene.camera.update(dt);
-
-    // Rotate cube around Y axis (faster than glue gun)
-    rotationAngle += dt * 2.0; // Faster rotation (2.0 radians per second)
-    const rotation = quat.create();
-    quat.fromEuler(rotation, 0, (rotationAngle * 180) / Math.PI, 0);
-    cubeNode.rotation = rotation;
 
     // Update scene
     scene.update(dt);
@@ -112,6 +113,16 @@ export async function createCubeScene(gl: WebGL2RenderingContext): Promise<Rende
       const resolutionLoc = gl.getUniformLocation(program, "uResolution");
       if (resolutionLoc !== null) {
         gl.uniform2f(resolutionLoc, engine.width, engine.height);
+      }
+
+      // Calculate and pass inverse view-projection matrix for edge detection
+      const inverseViewProjLoc = gl.getUniformLocation(program, "uInverseViewProj");
+      if (inverseViewProjLoc !== null) {
+        const viewProj = mat4.create();
+        mat4.multiply(viewProj, scene.camera.projectionMatrix, scene.camera.viewMatrix);
+        const inverseViewProj = mat4.create();
+        mat4.invert(inverseViewProj, viewProj);
+        gl.uniformMatrix4fv(inverseViewProjLoc, false, inverseViewProj);
       }
     });
   };
