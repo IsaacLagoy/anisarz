@@ -1,14 +1,21 @@
 interface SectionProps {
-  header: string;
+  header?: string;
   children?: React.ReactNode;
+  dark?: boolean;
 }
 
-export default function Section({ header, children }: SectionProps) {
+export default function Section({
+  header,
+  children,
+  dark = false
+}: SectionProps) {
   return (
-    <section className="flex flex-col items-center justify-center py-32 px-16">
-      <h2 className="text-6xl md:text-7xl font-bold text-white mb-8">{header}</h2>
+    <section className={`w-full h-full p-[10%] ${dark ? 'text-[#333]' : ''}`}>
+      <div className="sticky top-0">
+        {header && <button>{header}</button>}
+      </div>
+      {header && <h2 className="text-6xl md:text-7xl font-bold mb-8">{header}</h2>}
       {children}
     </section>
   );
 }
-
