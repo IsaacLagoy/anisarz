@@ -74,39 +74,76 @@ export default function StickyBottomDemo() {
       bg: 'bg-(--main-tan)', 
       content: (
         <Section header="Projects" dark>
-          <FancyBox>
-            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath={["/models/brokenrook.obj"]} position={[0, -1.2, 0]}/>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+              <FancyBox>
+                <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+                  <MemoizedScene modelPath={["/models/brokenrook.obj"]} position={[0, -1.2, 0]}/>
+                </div>
+              </FancyBox>
+              <div>
+                <h2 className="text-2xl font-bold">Rook</h2>
+                <p>
+                  This is a model of a rocket. It is made of wood and glue.
+                </p>
+              </div>
             </div>
-          </FancyBox>
-          <FancyBox>
-            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath={["/models/glue_gun.obj"]} position={[0, -0.6, 0]} scale={[0.02, 0.02, 0.02]}/>
+
+            <div className="flex flex-row gap-4">
+              <div>
+                <h2 className="text-2xl font-bold">Glue Gun</h2>
+                <p>
+                  This is a model of a glue gun. It is made of plastic and glue.
+                </p>
+              </div>
+              <FancyBox>
+                <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+                  <MemoizedScene modelPath={["/models/glue_gun.obj"]} position={[0, -0.6, 0]} scale={[0.02, 0.02, 0.02]}/>
+                </div>
+              </FancyBox>
             </div>
-          </FancyBox>
-          <FancyBox>
-            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath={[                
-                "/models/rocketL1_1.obj",
-                "/models/rocketL1_2.obj",
-                "/models/rocketL1_3.obj",
-                "/models/rocketL1_4.obj",
-                "/models/rocketL1_5.obj",
-                "/models/rocketL1_6.obj",
-                "/models/rocketL1_7.obj",
-                "/models/rocketL1_8.obj",
-                "/models/rocketL1_10.obj",
-                "/models/rocketL1_11.obj",
-                "/models/rocketL1_12.obj",
-                "/models/rocketL1_13.obj"
-                ]} position={[-0.1, 0, 0]}/>
+
+            <div className="flex flex-row gap-4">
+              <FancyBox>
+                <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+                  <MemoizedScene modelPath={[                
+                    "/models/rocketL1_1.obj",
+                    "/models/rocketL1_2.obj",
+                    "/models/rocketL1_3.obj",
+                    "/models/rocketL1_4.obj",
+                    "/models/rocketL1_5.obj",
+                    "/models/rocketL1_6.obj",
+                    "/models/rocketL1_7.obj",
+                    "/models/rocketL1_8.obj",
+                    "/models/rocketL1_10.obj",
+                    "/models/rocketL1_11.obj",
+                    "/models/rocketL1_12.obj",
+                    "/models/rocketL1_13.obj"
+                    ]} position={[-0.1, 0, 0]}/>
+                </div>
+              </FancyBox>
+              <div>
+                <h2 className="text-2xl font-bold">Rocket L1</h2>
+                <p>
+                  This is a model of a rocket. It is made of plastic and glue.
+                </p>
+              </div>
             </div>
-          </FancyBox>
-          <FancyBox>
-            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath={Array.from({ length: 109 }, (_, i) => `/models/rocketL3_${i + 1}.obj`)} scale={[2, 2, 2]} initialRotation={[0, 0, 1, 0]}/>
+              
+            <div className="flex flex-row gap-4">
+              <div>
+                <h2 className="text-2xl font-bold">Rocket L3</h2>
+                <p>
+                  This is a model of a rocket. It is made of plastic and glue.
+                </p>
+              </div>
+              <FancyBox>
+                <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+                  <MemoizedScene modelPath={Array.from({ length: 109 }, (_, i) => `/models/rocketL3_${i + 1}.obj`)} scale={[2, 2, 2]} initialRotation={[0, 0, 1, 0]}/>
+                </div>
+              </FancyBox>
             </div>
-          </FancyBox>
+          </div>
         </Section>
       )
     },
