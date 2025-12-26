@@ -11,9 +11,9 @@ export default function Section({
 }: SectionProps) {
   return (
     <section className={`w-full h-full p-[10%] ${dark ? 'text-[#333]' : ''}`}>
-      <div className="sticky top-0">
+      {/* <div className="sticky top-0">
         {header && <button>{header}</button>}
-      </div>
+      </div> */}
       {header && <h2 className="text-6xl md:text-7xl font-bold mb-8">{header}</h2>}
       {children}
     </section>

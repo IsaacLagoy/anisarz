@@ -13,21 +13,6 @@ export default function StickyBottomDemo() {
   const [scrollOffsets, setScrollOffsets] = useState<Record<number, any>>({});
   const sectionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  
-  // Simple timeout-based loading - hide after scenes have time to initialize
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsFadingOut(true);
-      // Wait for fade-out animation to complete before removing from DOM
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 300); // Match transition duration
-    }, 2000); // Give enough time for WebGL initialization and model loading
-    
-    return () => clearTimeout(timer);
-  }, []);
   
   const sections = useMemo(() => [
     { 
@@ -48,8 +33,6 @@ export default function StickyBottomDemo() {
           />
           <Section>
             <div className="relative w-full h-full">
-
-              
               <div className="flex flex-col md:flex-row items-center md:items-start gap-8 w-full relative z-10">
                 <div className="flex flex-col gap-6 md:w-1/2 text-[#333]">
                   <h1 className="text-6xl md:text-7xl font-bold">Anisa Roshan-Zamir</h1>
@@ -93,12 +76,35 @@ export default function StickyBottomDemo() {
         <Section header="Projects" dark>
           <FancyBox>
             <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath="/models/rook.obj" />
+              <MemoizedScene modelPath={["/models/brokenrook.obj"]} position={[0, -1.2, 0]}/>
             </div>
           </FancyBox>
           <FancyBox>
             <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
-              <MemoizedScene modelPath="/models/rook.obj" />
+              <MemoizedScene modelPath={["/models/glue_gun.obj"]} position={[0, -0.6, 0]} scale={[0.02, 0.02, 0.02]}/>
+            </div>
+          </FancyBox>
+          <FancyBox>
+            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+              <MemoizedScene modelPath={[                
+                "/models/rocketL1_1.obj",
+                "/models/rocketL1_2.obj",
+                "/models/rocketL1_3.obj",
+                "/models/rocketL1_4.obj",
+                "/models/rocketL1_5.obj",
+                "/models/rocketL1_6.obj",
+                "/models/rocketL1_7.obj",
+                "/models/rocketL1_8.obj",
+                "/models/rocketL1_10.obj",
+                "/models/rocketL1_11.obj",
+                "/models/rocketL1_12.obj",
+                "/models/rocketL1_13.obj"
+                ]} position={[-0.1, 0, 0]}/>
+            </div>
+          </FancyBox>
+          <FancyBox>
+            <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
+              <MemoizedScene modelPath={Array.from({ length: 109 }, (_, i) => `/models/rocketL3_${i + 1}.obj`)} scale={[2, 2, 2]} initialRotation={[0, 0, 1, 0]}/>
             </div>
           </FancyBox>
         </Section>
@@ -238,27 +244,6 @@ export default function StickyBottomDemo() {
 
   return (
     <>
-      {/* Loading Screen */}
-      {isLoading && (
-        <div 
-          className="fixed inset-0 bg-black flex flex-col items-center justify-center transition-opacity duration-1000"
-          style={{ 
-            pointerEvents: 'none', 
-            zIndex: 9999,
-            opacity: isFadingOut ? 0 : 1
-          }}
-        >
-          <div style={{ pointerEvents: 'auto', fontFamily: 'Kanit, sans-serif' }}>
-            <h1 className="text-7xl md:text-9xl font-bold text-white mb-4" style={{ fontFamily: 'Kanit, sans-serif' }}>
-              Welcome
-            </h1>
-            <p className="text-2xl md:text-3xl text-white/80" style={{ fontFamily: 'Kanit, sans-serif' }}>
-              Loading Models ...
-            </p>
-          </div>
-        </div>
-      )}
-      
       <div ref={containerRef} />
       
       <div className="fixed inset-0 pointer-events-none">

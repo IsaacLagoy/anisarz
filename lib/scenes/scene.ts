@@ -11,14 +11,16 @@ import {
 import { vec3, quat, mat4 } from 'gl-matrix';
 
 /**
-* Factory function to create a scene with a spinning model
-* Takes WebGL context, model path, scale, and initial rotation, returns a render function that handles all rendering
+* Factory function to create a scene with spinning model(s)
+* Takes WebGL context, model path(s), scale, and initial rotation, returns a render function that handles all rendering
+* Can accept a single model path or an array of model paths - all models will share the same transformations
 */
 export async function createCubeScene(
 gl: WebGL2RenderingContext, 
-modelPath: string,
+modelPath: string | string[],
 scale: vec3 = vec3.fromValues(1, 1, 1),
-initialRotation: quat = quat.create()
+initialRotation: quat = quat.create(),
+position: vec3 = vec3.fromValues(0, 0, 0)
 ): Promise<RenderFunction> {
 // Create engine
 const engine = await Engine.create(gl);
@@ -30,7 +32,7 @@ engine.resizeCanvas();
 const quadProgram = await Shader.create(
   gl,
   "/shaders/quad.vert",
-  "/shaders/quad.frag"
+  "/shaders/edge.frag"
 );
 
 // Assign quad program to engine framebuffer for final output
@@ -61,8 +63,13 @@ scene.camera.setPosition(vec3.fromValues(0, 0, 5));
 scene.camera.target = vec3.fromValues(0, 0, 0);
 scene.camera.updateMatrices();
 
-// Load model mesh
-const modelMesh = await Mesh.fromObj(engine, modelPath);
+// Normalize modelPath to array
+const modelPaths = Array.isArray(modelPath) ? modelPath : [modelPath];
+
+// Load all model meshes in parallel
+const modelMeshes = await Promise.all(
+  modelPaths.map(path => Mesh.fromObj(engine, path))
+);
 
 // Create skybox (using cube mesh for skybox)
 const skyboxCubeMesh = await Mesh.fromObj(engine, "/models/cube.obj");
@@ -76,28 +83,53 @@ const material = new Material(engine);
 material.roughnessMultiplier = 0.3;
 material.metallic = 0.8;
 
-// Create model node with scale and initial rotation (quaternion)
-const modelNode = new Node(
-  scene,
-  vec3.fromValues(0, 0, -20),
-  scale,
-  initialRotation,
-  modelMesh,
-  material
-);
-scene.add(modelNode);
-modelNode.angularVelocity = vec3.fromValues(0, 1, 0);
+// Manual rotation state - track rotation quaternion directly
+let manualRotation = quat.clone(initialRotation);
+// Angular velocity in radians per second
+const angularVelocity = vec3.fromValues(0, 0.2, 0);
 
-let rotationAngle = 0;
+// Create model nodes for all meshes with the same transformations
+const modelNodes = modelMeshes.map(mesh => {
+  const node = new Node(
+    scene,
+    position,
+    scale,
+    quat.fromValues(0, 0, 1, 0),
+    mesh,
+    material
+  );
+  // Disable automatic angular velocity integration - we'll do it manually
+  node.angularVelocity = vec3.fromValues(0, 0, 0);
+  // Initialize rotation to match manualRotation state
+  quat.copy(node.rotation, quat.normalize(manualRotation, manualRotation));
+  scene.add(node);
+  return node;
+});
 
 // Create and return render function
 const renderFn = (dt: number) => {
   // Don't resize canvas on every frame - only resize when needed via resize() method
   // This prevents layout thrashing during scroll
-  const canvas = engine.gl.canvas as HTMLCanvasElement;
-  if (canvas.width === 0 || canvas.height === 0 || engine.width === 0 || engine.height === 0) {
+  const canvasElement = engine.gl.canvas as HTMLCanvasElement;
+  if (canvasElement.width === 0 || canvasElement.height === 0 || engine.width === 0 || engine.height === 0) {
     return;
   }
+
+  // Manually integrate rotation (angular velocity to quaternion)
+  // Convert angular velocity to quaternion form: q_omega = (wx, wy, wz, 0)
+  const qOmega = quat.fromValues(angularVelocity[0], angularVelocity[1], angularVelocity[2], 0);
+  // Multiply with current rotation: dq = 0.5 * dt * q_rotation * q_omega
+  const dq = quat.create();
+  quat.multiply(dq, manualRotation, qOmega);
+  quat.scale(dq, dq, 0.5 * dt);
+  // Add to current rotation and normalize
+  quat.add(manualRotation, manualRotation, dq);
+  quat.normalize(manualRotation, manualRotation);
+  
+  // Apply rotation to all nodes
+  modelNodes.forEach(node => {
+    quat.copy(node.rotation, manualRotation);
+  });
 
   // Update scene (includes camera update with input handling)
   scene.update(dt);
@@ -140,8 +172,8 @@ const render = Object.assign(renderFn, {
   resize: () => {
     engine.resizeCanvas();
   },
-  enableControls: (canvas: HTMLCanvasElement) => {
-    scene.enableCameraControls(canvas);
+  enableControls: (canvasElement: HTMLCanvasElement) => {
+    scene.enableCameraControls(canvasElement);
   }
 }) as RenderFunction;
 
