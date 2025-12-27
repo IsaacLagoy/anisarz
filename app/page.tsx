@@ -33,20 +33,20 @@ export default function StickyBottomDemo() {
           />
           <Section>
             <div className="relative w-full h-full">
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-8 w-full relative z-10">
+              <div className="flex flex-col-reverse md:flex-row items-center md:items-start gap-8 w-full relative z-10">
                 <div className="flex flex-col gap-6 md:w-1/2 text-[#333]">
                   <h1 className="text-6xl md:text-7xl font-bold">Anisa Roshan-Zamir</h1>
                   <div className="flex flex-col gap-3 text-xl md:text-2xl">
                     <p className="font-medium">Mechanical Engineering</p>
                     <p className="text-lg md:text-xl">UT Dallas • 4.0 GPA</p>
-                    <p className="text-lg md:text-xl">Structures & Payload • Commet Rocketry</p>
+                    <p className="text-lg md:text-xl">Commet Rocketry</p>
                   </div>
                 </div>
                 
                 <div className="md:w-1/2 flex justify-center md:justify-end">
                   <div className="relative">
                     <Image 
-                      src="/images/anisa/anisa.jpeg" 
+                      src="/images/anisa/anisa_violin.JPG" 
                       alt="Anisa Roshan-Zamir" 
                       width={400}
                       height={400}
@@ -75,7 +75,7 @@ export default function StickyBottomDemo() {
       content: (
         <Section header="Projects" dark>
           <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-col-reverse md:flex-row gap-4">
               <FancyBox>
                 <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
                   <MemoizedScene modelPath={["/models/brokenrook.obj"]} position={[0, -1.2, 0]}/>
@@ -89,7 +89,7 @@ export default function StickyBottomDemo() {
               </div>
             </div>
 
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <div>
                 <h2 className="text-2xl font-bold">Glue Gun</h2>
                 <p>
@@ -103,7 +103,7 @@ export default function StickyBottomDemo() {
               </FancyBox>
             </div>
 
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-col-reverse md:flex-row gap-4">
               <FancyBox>
                 <div className="relative z-0 w-full max-w-xl aspect-video mx-auto">
                   <MemoizedScene modelPath={[                
@@ -130,7 +130,7 @@ export default function StickyBottomDemo() {
               </div>
             </div>
               
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <div>
                 <h2 className="text-2xl font-bold">Rocket L3</h2>
                 <p>
@@ -152,6 +152,9 @@ export default function StickyBottomDemo() {
       bg: 'bg-(--main-green)', 
       content: (
         <Section header="Experience">
+          <div>
+            <p>Ranked 53rd out of 121 in Spaceport America Cup 2024 in the 10K COTS category as a first-time competitor</p>
+          </div>
           <div>
             <h2><strong>Student Success Center at UTD</strong> - Academic Peer Tutor - 08/2024 – Present</h2>
             <ul>

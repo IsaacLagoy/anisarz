@@ -17,13 +17,14 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-left gap-6 p-4 bg-transparent text-[#333]">
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-6 p-4 bg-transparent text-[#333]">
       <button 
         onClick={copyEmailToClipboard}
         className="hover:underline cursor-pointer"
       >
         {isCopied ? 'copied' : 'Email'}
       </button>
+      <span>•</span>
       <a 
         href="https://www.linkedin.com/in/anisa-roshan-zamir/"
         target="_blank"
@@ -32,6 +33,7 @@ export default function Header() {
       >
         LinkedIn
       </a>
+      <span>•</span>
       <a 
         href="/docs/resume.docx"
         download
