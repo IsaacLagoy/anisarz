@@ -7,11 +7,10 @@
   --main-green: #b9c49f;
   --main-tan: #e8e1d1;
 
-  --sweet-salmon: #E48777;
   --bone: var(--main-tan);
   --dry-sage: var(--main-green);
-  --dark-khaki: #474A2C;
-  --darker-khaki: #37371F;
+  --smoky-rose: #8A685F;
+  --dusty-olive: #68744c;
 
   --side-padding: 10%;
 }

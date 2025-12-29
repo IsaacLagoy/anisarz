@@ -24,13 +24,29 @@ function splitObjFile(inputFile, outputDir = null) {
     const line = lines[i].trim();
     if (line.startsWith('o ')) {
       const objName = line.substring(2).trim();
-      // Extract number from obj name (e.g., "obj1" -> 1, "obj10" -> 10)
+      // Extract number from obj name (e.g., "obj1" -> 1, "obj10" -> 10, "Cube.001" -> 1)
       const match = objName.match(/obj(\d+)/);
+      const cubeMatch = objName.match(/Cube(?:\.(\d+))?/);
       if (match) {
         objectMarkers.push({
           lineIndex: i,
           objName: objName,
           objNumber: parseInt(match[1], 10)
+        });
+      } else if (cubeMatch) {
+        // Handle Cube, Cube.001, Cube.002, etc.
+        const objNumber = cubeMatch[1] ? parseInt(cubeMatch[1], 10) : 0;
+        objectMarkers.push({
+          lineIndex: i,
+          objName: objName,
+          objNumber: objNumber + 1 // Cube -> 1, Cube.001 -> 2, etc.
+        });
+      } else {
+        // For any other object name, use sequential numbering
+        objectMarkers.push({
+          lineIndex: i,
+          objName: objName,
+          objNumber: objectMarkers.length + 1
         });
       }
     }
